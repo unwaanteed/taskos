@@ -1,3 +1,3 @@
-# @unwanted/library-boilerplate
+# @unwanted/taskos
 
-Unwanted library boilerplate.
+Task orchestration and tasks flow manager.

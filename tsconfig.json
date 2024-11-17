@@ -10,6 +10,7 @@
     "esModuleInterop": true,
     "incremental": true,
     "isolatedModules": true,
+    "allowJs": true,
     "lib": [
       "ESNext",
       "DOM",
@@ -30,6 +31,6 @@
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "sourceMap": true
+    "sourceMap": false
   }
 }
