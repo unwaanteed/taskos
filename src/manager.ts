@@ -4,7 +4,7 @@
 
 import type { Service, RegisterOptions } from "ts-node";
 
-import * as upath from "upath";
+import npath from 'node:path';
 import pThrottle from "p-throttle";
 import { isRegExp } from "util/types";
 import { omit } from "@unwanted/omit";
@@ -142,7 +142,7 @@ export class TaskManager extends AsyncEventEmitter {
     }
 
     taskInfo.Class = TaskClass;
-    return this._installTask(name, taskInfo);
+    return this._addTask(name, taskInfo);
   }
 
   /**
@@ -181,7 +181,7 @@ export class TaskManager extends AsyncEventEmitter {
       }
 
       for (const f of files as string[]) {
-        if (!SUPPORTED_EXTS.includes(upath.extname(f))) {
+        if (!SUPPORTED_EXTS.includes(npath.extname(f))) {
           continue;
         }
         if (options && options.filter) {
@@ -198,7 +198,7 @@ export class TaskManager extends AsyncEventEmitter {
 
         let fullPath;
         try {
-          fullPath = resolve(upath.join(p, f));
+          fullPath = resolve(npath.join(p, f));
         } catch (err) {
           console.log(err);
           continue;
@@ -220,9 +220,9 @@ export class TaskManager extends AsyncEventEmitter {
         let tempJsPath: string | null = null;
         let tempTsPath: string | null = null;
         try {
-          const moduleExt = upath.extname(fullPath);
+          const moduleExt = npath.extname(fullPath);
           if (!this.tsService) {
-            const tsConfig: RegisterOptions = JSON.parse(await readFile(upath.join(__dirname, "..", "tsconfig.json"), { encoding: 'utf-8' }));
+            const tsConfig: RegisterOptions = JSON.parse(await readFile(npath.join(__dirname, "..", "tsconfig.json"), { encoding: 'utf-8' }));
             // eslint-disable-next-line global-require
             this.tsService = require('ts-node').register(tsConfig);
           }
@@ -231,14 +231,14 @@ export class TaskManager extends AsyncEventEmitter {
             // eslint-disable-next-line import/no-dynamic-require, global-require
             modExports = require(fullPath);
           } else if (moduleExt === '.mjs') {
-            tempTsPath = upath.join(upath.dirname(fullPath), `${upath.basename(fullPath, moduleExt)}-${nanoid()}.ts`);
+            tempTsPath = npath.join(npath.dirname(fullPath), `${npath.basename(fullPath, moduleExt)}-${nanoid()}.ts`);
             const mjsCode = await readFile(fullPath, { encoding: 'utf-8'});
             await writeFile(tempTsPath, `// @ts-nocheck\n\n${mjsCode}`, { encoding: 'utf-8'});
             // eslint-disable-next-line import/no-dynamic-require, global-require
             modExports = require(tempTsPath);
           } else {
             const jsCode = this.tsService!.compile(await readFile(fullPath, { encoding: "utf-8" }), fullPath);
-            tempJsPath = upath.join(upath.dirname(fullPath), `${upath.basename(fullPath, moduleExt)}-${nanoid()}.js`);
+            tempJsPath = npath.join(npath.dirname(fullPath), `${npath.basename(fullPath, moduleExt)}-${nanoid()}.js`);
             await writeFile(tempJsPath, jsCode, { encoding: 'utf-8' });
             // eslint-disable-next-line import/no-dynamic-require, global-require
             modExports = require(tempJsPath);
@@ -325,7 +325,7 @@ export class TaskManager extends AsyncEventEmitter {
     if (taskInfo.runners.size > 0) {
       taskInfo.zombi = true;
     } else {
-      this._uninstallTask(name);
+      this._deleteTask(name);
     }
   }
 
@@ -515,7 +515,7 @@ export class TaskManager extends AsyncEventEmitter {
       const releaseRunner = () => {
         taskInfo.runners.delete(runTask);
         if (taskInfo.zombi === true && taskInfo.runners.size === 0) {
-          this._uninstallTask(name);
+          this._deleteTask(name);
         }
       };
 
@@ -624,11 +624,11 @@ export class TaskManager extends AsyncEventEmitter {
     return taskInfo;
   }
 
-  private _installTask(name: string, taskInfo: TaskInfo) {
+  private _addTask(name: string, taskInfo: TaskInfo) {
     this.tasks.set(name, taskInfo);
   }
 
-  private _uninstallTask(name: string) {
+  private _deleteTask(name: string) {
     this.tasks.delete(name);
   }
 

@@ -1,6 +1,6 @@
 {
   "name": "@unwanted/taskos",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "Task orchestration and tasks flow manager",
   "author": "OverPhoenix",
   "license": "MIT",
@@ -68,7 +68,6 @@
     "p-throttle": "^4.1.1",
     "resolve": "^1.22.8",
     "ts-node": "^10.9.2",
-    "type-detect": "^4.1.0",
-    "upath": "^2.0.1"
+    "type-detect": "^4.1.0"
   }
 }

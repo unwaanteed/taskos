@@ -3,7 +3,7 @@
 /* eslint-disable no-return-assign */
 
 import "reflect-metadata/lite";
-import * as upath from "upath";
+import npath from "node:path";
 import * as promise from "@unwanted/promise";
 import {
   isPromise,
@@ -462,7 +462,7 @@ describe("tasks", () => {
 
   describe("loadTasksFrom()", () => {
     it("single location", async () => {
-      await manager.loadTasksFrom(upath.join(__dirname, "fixtures"));
+      await manager.loadTasksFrom(npath.join(__dirname, "fixtures"));
 
       expect(manager.hasTask("1")).toBeTruthy();
       expect(manager.hasTask("2")).toBeTruthy();
@@ -470,8 +470,8 @@ describe("tasks", () => {
     });
 
     it("multiple location", async () => {
-      const basePath = upath.join(__dirname, "fixtures");
-      await manager.loadTasksFrom([basePath, upath.join(basePath, "other"), upath.join(basePath, "multi")]);
+      const basePath = npath.join(__dirname, "fixtures");
+      await manager.loadTasksFrom([basePath, npath.join(basePath, "other"), npath.join(basePath, "multi")]);
 
       expect(manager.hasTask("1")).toBeTruthy();
       expect(manager.hasTask("2")).toBeTruthy();
