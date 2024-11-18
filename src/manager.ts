@@ -231,11 +231,15 @@ export class TaskManager extends AsyncEventEmitter {
             // eslint-disable-next-line import/no-dynamic-require, global-require
             modExports = require(fullPath);
           } else if (moduleExt === '.mjs') {
-            tempTsPath = npath.join(npath.dirname(fullPath), `${npath.basename(fullPath, moduleExt)}-${nanoid()}.ts`);
-            const mjsCode = await readFile(fullPath, { encoding: 'utf-8'});
-            await writeFile(tempTsPath, `// @ts-nocheck\n\n${mjsCode}`, { encoding: 'utf-8'});
-            // eslint-disable-next-line import/no-dynamic-require, global-require
-            modExports = require(tempTsPath);
+            try {
+              modExports = await import(fullPath);
+            } catch (e) {
+              tempTsPath = npath.join(npath.dirname(fullPath), `${npath.basename(fullPath, moduleExt)}-${nanoid()}.ts`);
+              const mjsCode = await readFile(fullPath, { encoding: 'utf-8'});
+              await writeFile(tempTsPath, `// @ts-nocheck\n\n${mjsCode}`, { encoding: 'utf-8'});
+              // eslint-disable-next-line import/no-dynamic-require, global-require
+              modExports = require(tempTsPath);
+            }
           } else {
             const jsCode = this.tsService!.compile(await readFile(fullPath, { encoding: "utf-8" }), fullPath);
             tempJsPath = npath.join(npath.dirname(fullPath), `${npath.basename(fullPath, moduleExt)}-${nanoid()}.js`);

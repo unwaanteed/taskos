@@ -1,10 +1,10 @@
 /* eslint-disable class-methods-use-this */
 import "reflect-metadata/lite";
-import { isNumber, isString } from "@unwanted/common";
 import * as promise from "@unwanted/promise";
+import { isNumber, isString } from "@unwanted/common";
 
 import { SCTask } from "./tasks";
-import { BaseTask, TaskManager, SeriesFlowTask, ParallelFlowTask, TryFlowTask, WaterfallFlowTask, RaceFlowTask } from "../src";
+import { BaseTask, TaskManager, TryFlowTask, RaceFlowTask, SeriesFlowTask, ParallelFlowTask, WaterfallFlowTask } from "../src";
 
 describe("tasks", () => {
   let manager: TaskManager;
